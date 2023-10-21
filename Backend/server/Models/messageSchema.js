@@ -6,7 +6,7 @@ const messageSchema= new Schema({
     sender: String,
     message: String,
     receiver: String
-})
+},{timestamps:true})
 
 const Message = mongoose.model('Message', messageSchema);
 

@@ -1,7 +1,8 @@
 const express = require('express');
-const { getMessages, postMessage } = require('../Controller/messagecontroller');
+const { getAllMessages, postMessage,getMessage,deleteMessage,updatePatchMessage } = require('../Controller/messagecontroller');
 const router = express.Router();
 
-router.route('/').get(getMessages).post(postMessage);
+router.route('/').get(getAllMessages).post(postMessage);
+router.route('/:id').get(getMessage).delete(deleteMessage).patch(updatePatchMessage)
 
 module.exports.messageRoute = router;

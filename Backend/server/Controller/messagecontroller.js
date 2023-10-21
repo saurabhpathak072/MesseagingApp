@@ -1,7 +1,10 @@
 const { Message } = require("../Models/messageSchema");
 
-const getMessages = (req,res)=>{
-    res.status(200).send('Get messages');
+const getAllMessages = async (req,res)=>{
+    const allMessages = await Message.find({},"sender message receiver").sort('-date');
+    res.status(200).json({
+      messages:allMessages
+    });
 };
 
 const postMessage=async (req,res)=>{
@@ -19,6 +22,54 @@ const postMessage=async (req,res)=>{
       }       
 }
 
+const getMessage=async (req,res)=>{
+  const {id} = req.params;
+  console.log(id);
+  const message = await Message.findById(id,"sender message receiver").exec();
+  res.status(200).json(message);
+}
+
+const deleteMessage=async (req,res)=>{
+   const {id} = req.params;
+  const deletedData = await Message.findByIdAndDelete(id).exec();
+  res.status(200).json({
+    message:"Data deleted Successfully",
+    data:deletedData
+  })
+}
+
+const updatePatchMessage=async(req,res)=>{
+    const {id} = req.params;
+    const {sender, message, receiver} = req.body;
+    
+    const foundMessage = await Message.findById(id).exec();
+
+    if(!foundMessage){
+      res.status(404).json({
+        message:"Record with id : "+id+" Not Found"
+      })
+    }
+
+    let query = {$set: {}};
+  for (let key in req.body) {
+    if (foundMessage[key] && foundMessage[key] !== req.body[key]) // if the field we have in req.body exists, we're gonna update it
+       query.$set[key] = req.body[key];
+  }
+
+  const updateMessage = await Message.findByIdAndUpdate(id,query,{new:true}).exec();
+
+  console.log("updateMessage",updateMessage);
+
+    res.status(200).json({
+      message:"Data updated successfully",
+      data:updateMessage
+    })
+  
+
+ 
+
+}
+
 module.exports = {
-    getMessages,postMessage
+  getAllMessages,postMessage,getMessage,deleteMessage,updatePatchMessage
 }
